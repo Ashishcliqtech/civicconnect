@@ -1,0 +1,16 @@
+<form class="filters card" method="get" action="{{ url_for(list_endpoint) }}">
+  <div class="field"><label for="f-q">Search</label><input id="f-q" class="input" name="q" value="{{ request.args.get('q','') }}" placeholder="Reference or title"></div>
+  <div class="field"><label for="f-status">Status</label><select id="f-status" class="input" name="status"><option value="">All</option>
+    {% for s in STATUSES %}<option {% if request.args.get('status')==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-cat">Category</label><select id="f-cat" class="input" name="category"><option value="">All</option>
+    {% for c in categories %}<option {% if request.args.get('category')==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-pri">Priority</label><select id="f-pri" class="input" name="priority"><option value="">All</option>
+    {% for p in PRIORITIES %}<option {% if request.args.get('priority')==p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="f-loc">Location</label><input id="f-loc" class="input" name="location" value="{{ request.args.get('location','') }}" placeholder="Area or street"></div>
+  {% if departments %}<div class="field"><label for="f-dept">Department</label><select id="f-dept" class="input" name="department"><option value="">All</option>
+    {% for d in departments %}<option value="{{ d.id }}" {% if request.args.get('department')==d.id|string %}selected{% endif %}>{{ d.name }}</option>{% endfor %}</select></div>{% endif %}
+  <div class="field"><label for="f-sort">Sort</label><select id="f-sort" class="input" name="sort">
+    <option value="newest">Newest</option><option value="oldest" {% if request.args.get('sort')=='oldest' %}selected{% endif %}>Oldest</option>
+    <option value="priority" {% if request.args.get('sort')=='priority' %}selected{% endif %}>Priority</option></select></div>
+  <div class="filter-actions"><button class="btn btn-primary" type="submit">Apply</button><a class="btn btn-ghost" href="{{ url_for(list_endpoint) }}">Reset</a></div>
+</form>

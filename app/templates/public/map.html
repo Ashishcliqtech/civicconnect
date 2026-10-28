@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Public complaints{% endblock %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block content %}
+{% from "macros/ui.html" import status_badge, empty, pagination as render_pagination with context %}
+<h1>Public complaints</h1>
+<p class="muted">Privacy-protected view: no names, contact details or photos. Locations are approximate.</p>
+{% set list_endpoint = 'public.public_complaints' %}{% set departments = None %}
+{% include "components/filters.html" %}
+<div id="public-map" class="map" data-api="{{ url_for('public.public_api') }}" data-query="{{ request.query_string.decode() }}" role="application" aria-label="Map of public complaints"></div>
+{% if pagination.items %}
+<div class="table-wrap"><table class="table"><thead><tr><th>Reference</th><th>Title</th><th>Category</th><th>Status</th><th>Date</th></tr></thead><tbody>
+{% for c in pagination.items %}<tr><td data-label="Reference">{{ c.reference_number }}</td><td data-label="Title">{{ c.title }}</td><td data-label="Category">{{ c.category }}</td><td data-label="Status">{{ status_badge(c.status) }}</td><td data-label="Date">{{ c.created_at|dt('%d %b %Y') }}</td></tr>{% endfor %}
+</tbody></table></div>
+{{ render_pagination(pagination, 'public.public_complaints') }}
+{% else %}{{ empty("No public complaints yet.", "map-pin-off") }}{% endif %}
+{% endblock %}
+{% block scripts %}<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="{{ url_for('static', filename='js/map-picker.js') }}"></script>{% endblock %}

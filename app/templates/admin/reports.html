@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import stat, chart %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Reports &amp; analytics</h1><a class="btn btn-ghost" href="{{ url_for('admin.export_csv') }}">Export CSV</a></div>
+<div class="grid grid-4">
+  {{ stat("Total complaints", summary.total, "files") }}
+  {{ stat("Resolved", summary.resolved, "check-circle-2", "ok") }}
+  {{ stat("Avg. days to resolve", avg_days if avg_days is not none else '—', "timer") }}
+  {{ stat("Avg. citizen rating", avg_rating if avg_rating else '—', "star") }}
+</div>
+<div class="grid grid-2">
+  {{ chart("trend-chart", "line", trend["labels"], trend["values"], "Submissions, last 12 months", "#0f8a5f") }}
+  {{ chart("perf-chart", "bar", perf["labels"], perf["values"], "Avg. resolution days by department", "#0b2545") }}
+  {{ chart("dept-chart", "bar", dept_chart["labels"], dept_chart["values"], "Complaints by department") }}
+  {{ chart("cat-chart", "doughnut", cat_chart["labels"], cat_chart["values"], "Complaints by category") }}
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

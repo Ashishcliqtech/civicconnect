@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import field, csrf %}
+{% block title %}{{ 'Edit complaint' if editing else 'Report an issue' }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block content %}
+<h1>{{ 'Edit complaint ' ~ c.reference_number if editing else 'Report an issue' }}</h1>
+<form method="post" enctype="multipart/form-data" class="card form-grid" id="complaint-form" novalidate data-loading data-max-mb="{{ config.MAX_UPLOAD_MB }}">
+  {{ csrf() }}
+  <div class="col-main">
+    {{ field(form.title, maxlength=150) }}
+    {{ field(form.category) }}
+    {{ field(form.description, rows=5, maxlength=2000) }}<small id="desc-count" class="muted"></small>
+    {{ field(form.photo, accept="image/jpeg,image/png,image/webp", hint="JPEG, PNG or WebP, up to " ~ config.MAX_UPLOAD_MB ~ " MB.") }}
+    <img id="photo-preview" class="evidence" alt="Selected photo preview" hidden>
+  </div>
+  <div class="col-map">
+    <label for="address">Address or landmark</label>
+    <div class="row">
+      <input id="address" name="address" class="input" value="{{ form.address.data or '' }}" required minlength="5" maxlength="255">
+      <button type="button" id="geocode-btn" class="btn btn-ghost">Find</button>
+    </div>
+    {% for e in form.address.errors %}<small class="error-text">{{ e }}</small>{% endfor %}
+    <div id="picker-map" class="map" role="application" aria-label="Click the map to choose the issue location"></div>
+    <p class="muted">Click the map to drop a pin, drag it to adjust, or <button type="button" id="locate-btn" class="link-btn">use my current location</button>. If the map is unavailable, type coordinates below.</p>
+    <div class="row">
+      <div class="field"><label for="latitude">Latitude</label><input id="latitude" name="latitude" class="input" type="number" step="any" min="-90" max="90" value="{{ form.latitude.data if form.latitude.data is not none else '' }}" required>
+        {% for e in form.latitude.errors %}<small class="error-text">{{ e }}</small>{% endfor %}</div>
+      <div class="field"><label for="longitude">Longitude</label><input id="longitude" name="longitude" class="input" type="number" step="any" min="-180" max="180" value="{{ form.longitude.data if form.longitude.data is not none else '' }}" required>
+        {% for e in form.longitude.errors %}<small class="error-text">{{ e }}</small>{% endfor %}</div>
+    </div>
+  </div>
+  <div class="form-actions"><button class="btn btn-primary btn-lg" type="submit">{{ 'Save changes' if editing else 'Submit complaint' }}</button>
+    <a class="btn btn-ghost btn-lg" href="{{ url_for('citizen.my_complaints') }}">Cancel</a></div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/map-picker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/complaint-form.js') }}"></script>{% endblock %}

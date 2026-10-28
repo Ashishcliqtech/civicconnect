@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import stat, chart, status_badge, empty %}
+{% block title %}Authority dashboard{% endblock %}
+{% block content %}
+<h1>{{ current_user.department.name if current_user.department else 'Authority dashboard' }}</h1>
+{% if not current_user.department %}<div class="card warn-card">Your account is not linked to a department yet. Ask an administrator to assign one.</div>{% endif %}
+<div class="grid grid-4">
+  {{ stat("Assigned complaints", summary.total, "inbox") }}
+  {{ stat("Pending review", summary.pending, "clock", "warn") }}
+  {{ stat("In progress", summary.in_progress, "loader", "info") }}
+  {{ stat("Resolved", summary.resolved, "check-circle-2", "ok") }}
+</div>
+<p class="muted">Average resolution time: <strong>{{ avg_days ~ ' days' if avg_days is not none else 'not enough data yet' }}</strong></p>
+<div class="grid grid-2">
+  {{ chart("cat-chart", "doughnut", cat_chart["labels"], cat_chart["values"], "Complaints by category") }}
+  {{ chart("trend-chart", "line", trend["labels"], trend["values"], "Monthly complaints", "#0f8a5f") }}
+</div>
+<div class="card"><h3>Oldest pending</h3>
+  {% for c in urgent %}<a class="list-row" href="{{ url_for('authority.complaint_detail', cid=c.id) }}"><div><strong>{{ c.title }}</strong><small class="muted">{{ c.reference_number }} · {{ c.created_at|dt }}</small></div>{{ status_badge(c.status) }}</a>
+  {% else %}{{ empty("Nothing waiting for review.", "party-popper") }}{% endfor %}</div>
+{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

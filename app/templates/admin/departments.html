@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import field, csrf %}
+{% block title %}Departments{% endblock %}
+{% block content %}
+<h1>Departments</h1>
+<div class="grid grid-2">
+  <div class="card"><h3>Existing departments</h3>
+    {% for d in departments %}<div class="list-row"><div><strong>{{ d.name }}</strong><small class="muted">{{ d.officers|length }} officer(s) · {{ d.complaints|length }} complaint(s) · {{ 'Active' if d.is_active else 'Inactive' }}</small></div>
+      <form method="post" action="{{ url_for('admin.department_toggle', did=d.id) }}" data-confirm="Change active state for {{ d.name }}?">{{ csrf() }}<button class="btn btn-ghost btn-sm">{{ 'Deactivate' if d.is_active else 'Activate' }}</button></form></div>
+    {% else %}<p class="muted">No departments yet.</p>{% endfor %}</div>
+  <div class="card"><h3>Add department</h3><form method="post" novalidate>{{ csrf() }}
+    {{ field(form.name) }}{{ field(form.description, rows=3) }}{{ field(form.contact_email) }}
+    <label class="check">{{ form.is_active }} {{ form.is_active.label.text }}</label><button class="btn btn-primary">Create</button></form>
+    <p><a href="{{ url_for('admin.categories') }}">Manage complaint categories &rarr;</a></p></div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import field, csrf %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<h1>Complaint categories</h1>
+<div class="grid grid-2">
+  <div class="card">{% for c in categories %}<div class="list-row"><div><i data-lucide="{{ c.icon }}"></i> <strong>{{ c.name }}</strong> <small class="muted">{{ 'Active' if c.is_active else 'Hidden' }}</small></div>
+    <form method="post" action="{{ url_for('admin.category_toggle', cid=c.id) }}">{{ csrf() }}<button class="btn btn-ghost btn-sm">{{ 'Hide' if c.is_active else 'Show' }}</button></form></div>{% endfor %}</div>
+  <div class="card"><h3>Add category</h3><form method="post" novalidate>{{ csrf() }}{{ field(form.name) }}{{ field(form.icon, hint="Any icon name from lucide.dev") }}<button class="btn btn-primary">Add</button></form></div>
+</div>
+{% endblock %}

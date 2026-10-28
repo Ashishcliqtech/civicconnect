@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import empty, pagination as render_pagination with context %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Users</h1><a class="btn btn-primary" href="{{ url_for('admin.user_new') }}">Add user / officer</a></div>
+<form class="filters card" method="get"><div class="field"><label for="uq">Search</label><input id="uq" class="input" name="q" value="{{ request.args.get('q','') }}"></div>
+  <div class="field"><label for="ur">Role</label><select id="ur" name="role" class="input"><option value="">All</option>{% for r in ['citizen','authority','admin'] %}<option {% if request.args.get('role')==r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></div>
+  <div class="filter-actions"><button class="btn btn-primary">Filter</button></div></form>
+{% if pagination.items %}
+<div class="table-wrap"><table class="table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Active</th><th></th></tr></thead><tbody>
+{% for u in pagination.items %}<tr><td data-label="Name">{{ u.full_name }}</td><td data-label="Email">{{ u.email }}</td><td data-label="Role">{{ u.role }}</td><td data-label="Department">{{ u.department.name if u.department else '—' }}</td><td data-label="Active">{{ 'Yes' if u.is_active else 'No' }}</td><td><a href="{{ url_for('admin.user_edit', uid=u.id) }}">Edit</a></td></tr>{% endfor %}
+</tbody></table></div>{{ render_pagination(pagination, 'admin.users') }}
+{% else %}{{ empty("No users found.", "users") }}{% endif %}
+{% endblock %}

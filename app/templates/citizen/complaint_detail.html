@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import field, csrf %}
+{% block title %}{{ c.reference_number }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block content %}
+<a href="{{ url_for('citizen.my_complaints') }}">&larr; Back to my complaints</a>
+<div class="detail-grid">
+  <div>
+    {% include "components/complaint_summary.html" %}
+    {% if c.status == 'Resolved' %}
+    <div class="card"><h3>Your feedback</h3>
+      {% if c.feedback %}<p>You rated this <strong>{{ c.feedback.rating }}/5</strong>.{% if c.feedback.comments %} “{{ c.feedback.comments }}”{% endif %}</p>
+      {% else %}
+      <form method="post" action="{{ url_for('citizen.feedback', cid=c.id) }}">{{ csrf() }}
+        {{ field(feedback_form.rating, type="number", min=1, max=5) }}
+        {{ field(feedback_form.comments, rows=3) }}
+        <button class="btn btn-primary">Submit feedback</button></form>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <aside>
+    <div class="card"><h3>Status timeline</h3>{% include "components/timeline.html" %}</div>
+    {% if c.is_open %}
+    <div class="card"><h3>Send a message</h3>
+      <form method="post" action="{{ url_for('citizen.comment', cid=c.id) }}">{{ csrf() }}{{ field(comment_form.message, rows=3) }}<button class="btn btn-ghost">Send</button></form></div>
+    {% endif %}
+    {% if c.status == 'Submitted' %}<a class="btn btn-ghost btn-block" href="{{ url_for('citizen.edit', cid=c.id) }}">Edit complaint</a>{% endif %}
+    {% if c.status in ('Submitted', 'Under Review') %}
+    <form method="post" action="{{ url_for('citizen.withdraw', cid=c.id) }}" data-confirm="Withdraw this complaint? This cannot be undone.">{{ csrf() }}
+      <button class="btn btn-danger btn-block">Withdraw complaint</button></form>{% endif %}
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="{{ url_for('static', filename='js/map-picker.js') }}"></script>{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Report civic issues{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Crowdsourced civic reporting</p>
+    <h1>See a problem in your neighbourhood? Get it fixed.</h1>
+    <p class="lead">Report potholes, garbage, broken streetlights and more. Pin the location, add a photo, and follow every step until the issue is resolved.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="{{ url_for('citizen.submit') }}"><i data-lucide="megaphone"></i> Report an Issue</a>
+      <a class="btn btn-ghost btn-lg" href="{{ url_for('public.public_complaints') }}">Browse public map</a>
+    </div>
+  </div>
+  <div class="hero-card card">
+    <h3>Live platform data</h3>
+    <div class="mini-stats">
+      <div><strong>{{ counts.complaints }}</strong><span>complaints</span></div>
+      <div><strong>{{ counts.resolved }}</strong><span>resolved</span></div>
+      <div><strong>{{ counts.citizens }}</strong><span>citizens</span></div>
+    </div>
+    <p class="muted">Counted directly from this system's database.</p>
+  </div>
+</section>
+
+<section aria-labelledby="cat-h"><h2 id="cat-h">What can you report?</h2>
+  <div class="grid grid-4">
+    {% for c in categories %}
+    <a class="card category-card" href="{{ url_for('citizen.submit') }}?category={{ c.name|urlencode }}">
+      <i data-lucide="{{ c.icon }}"></i><h3>{{ c.name }}</h3></a>
+    {% else %}<p class="muted">Categories will appear once the database is initialised (run <code>flask init-db</code>).</p>{% endfor %}
+  </div>
+</section>
+
+<section aria-labelledby="how-h"><h2 id="how-h">How it works</h2>
+  <div class="grid grid-4 steps">
+    <div class="card"><span class="step-num">1</span><h3>Report</h3><p>Describe the issue, drop a pin, attach a photo.</p></div>
+    <div class="card"><span class="step-num">2</span><h3>Review</h3><p>Your complaint is routed to the right department.</p></div>
+    <div class="card"><span class="step-num">3</span><h3>Fix</h3><p>Officers update progress and you get notifications.</p></div>
+    <div class="card"><span class="step-num">4</span><h3>Verify</h3><p>See proof of the fix, then rate the outcome.</p></div>
+  </div>
+</section>
+{% endblock %}

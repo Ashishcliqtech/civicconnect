@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import empty, pagination as render_pagination with context %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<h1>Audit log</h1>
+{% if pagination.items %}<div class="table-wrap"><table class="table"><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Entity</th><th>Details</th></tr></thead><tbody>
+{% for a in pagination.items %}<tr><td data-label="When">{{ a.created_at|dt }}</td><td data-label="Actor">{{ a.actor.full_name if a.actor else 'system' }}</td><td data-label="Action">{{ a.action }}</td><td data-label="Entity">{{ a.entity_type }} #{{ a.entity_id or '' }}</td><td data-label="Details">{{ a.details }}</td></tr>{% endfor %}
+</tbody></table></div>{{ render_pagination(pagination, 'admin.audit_log') }}{% else %}{{ empty("No audit entries yet.", "scroll-text") }}{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}How it works{% endblock %}
+{% block content %}
+<h1>How CivicConnect works</h1>
+<div class="grid grid-3">
+  <div class="card"><h3><i data-lucide="user"></i> Citizens</h3><p>Register, report issues with a map pin and photo, track status, receive notifications, and rate the resolution.</p></div>
+  <div class="card"><h3><i data-lucide="hard-hat"></i> Department officers</h3><p>Review complaints assigned to your department, accept or reject with reasons, add internal notes, and upload proof of work.</p></div>
+  <div class="card"><h3><i data-lucide="shield-check"></i> Administrators</h3><p>Manage users and departments, assign complaints, verify resolutions, and monitor analytics and audit logs.</p></div>
+</div>
+<h2>Complaint lifecycle</h2>
+<p><strong>Submitted → Under Review → Assigned → In Progress → Resolved</strong>. Complaints can also be Rejected (with a reason) or Withdrawn by the citizen. Only officers and administrators can resolve a complaint; resolved complaints may be reopened by an administrator.</p>
+<h2>Your privacy</h2>
+<p>The public map shows only the category, title, status and an approximate location. Your name, contact details, photos and internal notes are never shown publicly.</p>
+{% endblock %}

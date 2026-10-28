@@ -1,0 +1,39 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{% macro field(f, hint=None) %}
+<div class="field {% if f.errors %}has-error{% endif %}">
+  {{ f.label }}
+  {{ f(class_="input", **kwargs) }}
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% for e in f.errors %}<small class="error-text" role="alert">{{ e }}</small>{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro status_badge(status) %}<span class="badge status-{{ status|slug }}">{{ status }}</span>{% endmacro %}
+{% macro priority_badge(p) %}<span class="badge priority-{{ p|lower }}">{{ p }}</span>{% endmacro %}
+
+{% macro empty(message, icon='inbox') %}
+<div class="empty"><i data-lucide="{{ icon }}"></i><p>{{ message }}</p></div>
+{% endmacro %}
+
+{% macro stat(label, value, icon='bar-chart-2', tone='') %}
+<div class="stat-card {{ tone }}"><i data-lucide="{{ icon }}"></i><div><div class="stat-value">{{ value }}</div><div class="stat-label">{{ label }}</div></div></div>
+{% endmacro %}
+
+{# Needs "with context" so it can read request.args and keep filters while paging #}
+{% macro pagination(p, endpoint) %}
+{% if p.pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+  {% set args = request.args.to_dict() %}{% set _ = args.pop('page', None) %}
+  {% if p.has_prev %}<a class="btn btn-ghost btn-sm" href="{{ url_for(endpoint, page=p.prev_num, **args) }}">&laquo; Prev</a>{% endif %}
+  <span>Page {{ p.page }} of {{ p.pages }}</span>
+  {% if p.has_next %}<a class="btn btn-ghost btn-sm" href="{{ url_for(endpoint, page=p.next_num, **args) }}">Next &raquo;</a>{% endif %}
+</nav>
+{% endif %}
+{% endmacro %}
+
+{% macro chart(id, kind, labels, values, title, color='#1f6feb') %}
+<div class="card chart-card"><h3>{{ title }}</h3><div class="chart-wrap"><canvas id="{{ id }}" role="img" aria-label="{{ title }}"
+  data-chart='{{ {"type": kind, "labels": labels, "values": values, "color": color, "label": title}|tojson|forceescape }}'></canvas></div>
+  {% if not values %}<p class="muted">No data yet.</p>{% endif %}</div>
+{% endmacro %}

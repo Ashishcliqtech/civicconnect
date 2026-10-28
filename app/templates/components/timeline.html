@@ -1,0 +1,17 @@
+{% from "macros/ui.html" import status_badge %}
+<ol class="timeline">
+{% for u in updates %}
+  <li class="timeline-item {% if u.visibility == 'internal' %}internal{% endif %}">
+    <span class="dot"></span>
+    <div>
+      <div class="tl-head">
+        {% if u.new_status %}{{ status_badge(u.new_status) }}{% endif %}
+        {% if u.visibility == 'internal' %}<span class="badge badge-internal">Internal note</span>{% endif %}
+        <time>{{ u.created_at|dt }}</time>
+      </div>
+      <p>{{ u.message }}</p>
+      {% if u.actor and show_actor|default(false) %}<small class="muted">by {{ u.actor.full_name }} ({{ u.actor.role }})</small>{% endif %}
+    </div>
+  </li>
+{% endfor %}
+</ol>

@@ -1,0 +1,19 @@
+{% from "macros/ui.html" import status_badge, priority_badge, empty, pagination as render_pagination with context %}
+{% if pagination.items %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Reference</th><th>Title</th><th>Category</th><th>Priority</th><th>Status</th>{% if show_dept|default(false) %}<th>Department</th>{% endif %}<th>Created</th></tr></thead>
+  <tbody>
+  {% for c in pagination.items %}
+    <tr>
+      <td data-label="Reference"><a href="{{ url_for(detail_endpoint, cid=c.id) }}">{{ c.reference_number }}</a></td>
+      <td data-label="Title">{{ c.title }}</td>
+      <td data-label="Category">{{ c.category }}</td>
+      <td data-label="Priority">{{ priority_badge(c.priority) }}</td>
+      <td data-label="Status">{{ status_badge(c.status) }}</td>
+      {% if show_dept|default(false) %}<td data-label="Department">{{ c.department.name if c.department else '—' }}</td>{% endif %}
+      <td data-label="Created">{{ c.created_at|dt('%d %b %Y') }}</td>
+    </tr>
+  {% endfor %}
+  </tbody></table></div>
+{{ render_pagination(pagination, list_endpoint) }}
+{% else %}{{ empty("No complaints match your filters.", "search-x") }}{% endif %}

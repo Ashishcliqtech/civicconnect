@@ -1,0 +1,27 @@
+{% from "macros/ui.html" import status_badge, priority_badge %}
+<div class="card">
+  <div class="summary-head"><div><small class="muted">Reference</small><h1 class="ref">{{ c.reference_number }}</h1></div>
+    <div>{{ status_badge(c.status) }} {{ priority_badge(c.priority) }}</div></div>
+  <h2>{{ c.title }}</h2>
+  <dl class="meta">
+    <div><dt>Category</dt><dd>{{ c.category }}</dd></div>
+    <div><dt>Submitted</dt><dd>{{ c.created_at|dt }}</dd></div>
+    <div><dt>Department</dt><dd>{{ c.department.name if c.department else 'Not yet assigned' }}</dd></div>
+    <div><dt>Last update</dt><dd>{{ c.updated_at|dt }}</dd></div>
+    <div><dt>Address</dt><dd>{{ c.address }}</dd></div>
+    <div><dt>Coordinates</dt><dd>{{ '%.5f'|format(c.latitude) }}, {{ '%.5f'|format(c.longitude) }}</dd></div>
+    {% if show_citizen|default(false) %}<div><dt>Citizen</dt><dd>{{ c.author.full_name }}{% if show_contact|default(false) %} · {{ c.author.email }}{% if c.author.phone %} · {{ c.author.phone }}{% endif %}{% endif %}</dd></div>{% endif %}
+  </dl>
+  <p class="description">{{ c.description }}</p>
+  {% if c.photo_filename %}<figure><img class="evidence" src="{{ url_for('public.media', filename=c.photo_filename) }}" alt="Photo submitted with the complaint" loading="lazy"><figcaption class="muted">Citizen photo</figcaption></figure>{% endif %}
+  <div id="detail-map" class="map map-sm" data-lat="{{ c.latitude }}" data-lng="{{ c.longitude }}" role="img" aria-label="Complaint location map"></div>
+</div>
+{% set r = c.latest_resolution %}
+{% if r %}
+<div class="card"><h3><i data-lucide="check-circle-2"></i> Resolution</h3>
+  <p>{{ r.action_taken }}</p>
+  {% if r.proof_photo_filename %}<img class="evidence" src="{{ url_for('public.media', filename=r.proof_photo_filename) }}" alt="Resolution proof photo" loading="lazy">{% endif %}
+  <p class="muted">Submitted {{ r.submitted_at|dt }} by {{ r.officer.full_name }} ·
+    {% if r.verified_at %}<strong class="ok">Verified by admin on {{ r.verified_at|dt }}</strong>{% else %}Awaiting admin verification{% endif %}</p>
+</div>
+{% endif %}

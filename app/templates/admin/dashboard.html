@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import stat, chart %}
+{% block title %}Admin dashboard{% endblock %}
+{% block content %}
+<h1>Administration</h1>
+<div class="grid grid-4">
+  {{ stat("Registered citizens", citizens, "users") }}
+  {{ stat("Total complaints", summary.total, "files") }}
+  {{ stat("Pending", summary.pending, "clock", "warn") }}
+  {{ stat("In progress", summary.in_progress, "loader", "info") }}
+  {{ stat("Resolved", summary.resolved, "check-circle-2", "ok") }}
+  {{ stat("Rejected", summary.rejected, "x-circle", "bad") }}
+  {{ stat("Avg. resolution (days)", avg_days if avg_days is not none else '—', "timer") }}
+  {{ stat("Awaiting verification", awaiting, "badge-check") }}
+</div>
+<div class="grid grid-2">
+  {{ chart("dept-chart", "bar", dept_chart["labels"], dept_chart["values"], "Complaints by department") }}
+  {{ chart("cat-chart", "doughnut", cat_chart["labels"], cat_chart["values"], "Complaints by category") }}
+  {{ chart("trend-chart", "line", trend["labels"], trend["values"], "Monthly submissions", "#0f8a5f") }}
+  <div class="card"><h3>Recent activity</h3>
+    {% for a in recent %}<div class="list-row"><div><strong>{{ a.action }}</strong><small class="muted">{{ a.details }}</small></div><small>{{ a.created_at|dt }}</small></div>
+    {% else %}<p class="muted">No activity yet.</p>{% endfor %}
+    <a href="{{ url_for('admin.audit_log') }}">View full audit log &rarr;</a></div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

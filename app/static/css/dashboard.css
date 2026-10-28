@@ -1,0 +1,8 @@
+/* Dashboard widgets */
+.stat-card { display: flex; gap: .9rem; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem 1.2rem; }
+.stat-card svg { width: 30px; height: 30px; color: var(--blue); flex: none; }
+.stat-value { font-size: 1.7rem; font-weight: 800; color: var(--navy); line-height: 1; } .stat-label { color: var(--muted); font-size: .85rem; }
+.stat-card.warn svg { color: var(--warn); } .stat-card.ok svg { color: var(--green); } .stat-card.bad svg { color: var(--bad); } .stat-card.info svg { color: #0b5cad; }
+.chart-card h3 { font-size: 1rem; } .chart-wrap { position: relative; height: 260px; }
+.list-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .7rem 0; border-bottom: 1px solid var(--border); text-decoration: none; color: inherit; }
+.list-row:last-child { border-bottom: 0; } .list-row small { display: block; }

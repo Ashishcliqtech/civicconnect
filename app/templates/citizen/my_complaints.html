@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}My complaints{% endblock %}
+{% block content %}
+<div class="page-head"><h1>My complaints</h1><a class="btn btn-primary" href="{{ url_for('citizen.submit') }}">New complaint</a></div>
+{% set list_endpoint = 'citizen.my_complaints' %}{% set detail_endpoint = 'citizen.complaint_detail' %}
+{% set departments = None %}
+{% include "components/filters.html" %}
+{% include "components/complaint_table.html" %}
+{% endblock %}

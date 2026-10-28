@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import csrf, empty, pagination as render_pagination with context %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Notifications</h1>
+  <form method="post" action="{{ url_for('auth.mark_all_read') }}">{{ csrf() }}<button class="btn btn-ghost btn-sm">Mark all as read</button></form></div>
+{% for n in pagination.items %}
+<form method="post" action="{{ url_for('auth.mark_read', nid=n.id) }}" class="notif {% if not n.is_read %}unread{% endif %}">
+  {{ csrf() }}
+  <button type="submit" class="notif-btn"><strong>{{ n.title }}</strong><span>{{ n.message }}</span><time>{{ n.created_at|dt }}</time></button>
+</form>
+{% else %}{{ empty("You have no notifications yet.", "bell-off") }}{% endfor %}
+{{ render_pagination(pagination, 'auth.notifications') }}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import field, csrf %}
+{% block title %}Manage {{ c.reference_number }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin.complaints') }}">&larr; Back to complaints</a>
+{% set show_citizen = true %}{% set show_contact = true %}
+<div class="detail-grid">
+  <div>{% include "components/complaint_summary.html" %}
+    {% set r = c.latest_resolution %}
+    {% if r and not r.verified_at and c.status == 'Resolved' %}
+    <form method="post" action="{{ url_for('admin.verify', rid=r.id) }}" data-confirm="Verify this resolution evidence?">{{ csrf() }}<button class="btn btn-primary">Verify resolution</button></form>{% endif %}
+    <div class="card"><h3>Full timeline (incl. internal notes)</h3>{% set show_actor = true %}{% include "components/timeline.html" %}</div></div>
+  <aside>
+    {% if c.is_open %}
+    <div class="card"><h3>Assign / reassign</h3>
+      <form method="post" action="{{ url_for('admin.assign', cid=c.id) }}">{{ csrf() }}
+        {{ field(assign_form.department_id) }}{{ field(assign_form.officer_id) }}{{ field(assign_form.priority) }}
+        <button class="btn btn-primary">Assign</button></form></div>
+    {% else %}
+    <div class="card"><h3>Reopen complaint</h3>
+      <form method="post" action="{{ url_for('admin.reopen', cid=c.id) }}" data-confirm="Reopen this complaint?">{{ csrf() }}{{ field(reopen_form.reason, rows=3) }}<button class="btn btn-ghost">Reopen</button></form></div>
+    {% endif %}
+    {% if c.feedback %}<div class="card"><h3>Citizen feedback</h3><p><strong>{{ c.feedback.rating }}/5</strong> {{ c.feedback.comments }}</p></div>{% endif %}
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="{{ url_for('static', filename='js/map-picker.js') }}"></script>{% endblock %}

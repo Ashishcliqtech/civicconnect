@@ -1,0 +1,21 @@
+# Render Blueprint. Persistent disks require a paid instance type (verify current Render pricing).
+services:
+  - type: web
+    name: civicconnect
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: flask --app wsgi init-db && gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_APP
+        value: wsgi.py
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: civicconnect-data
+      mountPath: /var/data
+      sizeGB: 1

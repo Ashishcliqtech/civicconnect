@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import stat, chart, status_badge, empty %}
+{% block title %}My dashboard{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Hello, {{ current_user.full_name.split()[0] }}</h1>
+  <a class="btn btn-primary" href="{{ url_for('citizen.submit') }}"><i data-lucide="plus"></i> New complaint</a></div>
+<div class="grid grid-4">
+  {{ stat("Total submitted", summary.total, "files") }}
+  {{ stat("Pending", summary.pending, "clock", "warn") }}
+  {{ stat("In progress", summary.in_progress, "loader", "info") }}
+  {{ stat("Resolved", summary.resolved, "check-circle-2", "ok") }}
+</div>
+<div class="grid grid-2">
+  <div class="card"><h3>Recent activity</h3>
+    {% for c in recent %}
+      <a class="list-row" href="{{ url_for('citizen.complaint_detail', cid=c.id) }}"><div><strong>{{ c.title }}</strong><small class="muted">{{ c.reference_number }} · updated {{ c.updated_at|dt }}</small></div>{{ status_badge(c.status) }}</a>
+    {% else %}{{ empty("You haven't submitted any complaints yet.", "megaphone") }}{% endfor %}
+  </div>
+  {{ chart("status-chart", "doughnut", status_chart["labels"], status_chart["values"] if summary.total else [], "Complaints by status") }}
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

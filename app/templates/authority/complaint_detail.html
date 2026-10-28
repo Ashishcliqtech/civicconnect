@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "macros/ui.html" import field, csrf %}
+{% block title %}Review {{ c.reference_number }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">{% endblock %}
+{% block content %}
+<a href="{{ url_for('authority.complaints') }}">&larr; Back to complaints</a>
+{% set show_citizen = true %}
+<div class="detail-grid">
+  <div>{% include "components/complaint_summary.html" %}
+    <div class="card"><h3>Timeline &amp; internal notes</h3>{% set show_actor = true %}{% include "components/timeline.html" %}</div></div>
+  <aside>
+    {% if c.status in ('Assigned', 'Under Review') %}
+    <div class="card"><h3>Review</h3>
+      <form method="post" action="{{ url_for('authority.accept', cid=c.id) }}">{{ csrf() }}<button class="btn btn-primary btn-block">Accept &amp; start work</button></form>
+      <details><summary>Reject with reason</summary>
+        <form method="post" action="{{ url_for('authority.reject', cid=c.id) }}" data-confirm="Reject this complaint?">{{ csrf() }}{{ field(reject_form.reason, rows=3) }}<button class="btn btn-danger">Reject</button></form></details>
+    </div>{% endif %}
+    {% if status_form.status.choices %}
+    <div class="card"><h3>Update status</h3>
+      <form method="post" action="{{ url_for('authority.status', cid=c.id) }}">{{ csrf() }}{{ field(status_form.status) }}{{ field(status_form.message, rows=2) }}<button class="btn btn-ghost">Update</button></form></div>{% endif %}
+    {% if c.status == 'In Progress' %}
+    <div class="card"><h3>Record resolution</h3>
+      <form method="post" enctype="multipart/form-data" action="{{ url_for('authority.resolve', cid=c.id) }}" data-confirm="Mark as resolved and submit evidence?">{{ csrf() }}
+        {{ field(resolution_form.action_taken, rows=4) }}{{ field(resolution_form.proof, accept="image/jpeg,image/png,image/webp") }}
+        <button class="btn btn-primary">Submit resolution</button></form></div>{% endif %}
+    {% if c.is_open %}
+    <div class="card"><h3>Ask citizen for information</h3>
+      <form method="post" action="{{ url_for('authority.request_info', cid=c.id) }}">{{ csrf() }}{{ field(info_form.message, rows=2) }}<button class="btn btn-ghost">Send request</button></form></div>{% endif %}
+    <div class="card"><h3>Internal note</h3>
+      <form method="post" action="{{ url_for('authority.note', cid=c.id) }}">{{ csrf() }}{{ field(note_form.message, rows=3) }}<button class="btn btn-ghost">Save note</button></form></div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="{{ url_for('static', filename='js/map-picker.js') }}"></script>{% endblock %}
